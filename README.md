@@ -1,67 +1,12 @@
 # upcli
 
-`upcli` updates Codex CLI, Claude Code CLI, and Google's `agy` CLI concurrently, with live per-tool output and an at-a-glance result summary.
+**Update Codex CLI, Claude Code CLI, and agy in one command—with parallel progress you can actually follow.**
 
-The interface takes cues from [Mole](https://github.com/tw93/Mole): a compact, colorful terminal dashboard with clear status markers and a persistent result summary. It uses Go with [Bubble Tea](https://github.com/charmbracelet/bubbletea) and [Lip Gloss](https://github.com/charmbracelet/lipgloss), the same lightweight Go terminal-UI building blocks used by Mole.
+[![Latest release](https://img.shields.io/github/v/release/DexterL/cli-tools-updater)](https://github.com/DexterL/cli-tools-updater/releases/latest)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Go](https://img.shields.io/badge/Go-1.24%2B-00ADD8?logo=go&logoColor=white)](go.mod)
 
-## Run
-
-```sh
-go run ./cmd/upcli
-```
-
-Or build the executable:
-
-```sh
-make build
-./bin/upcli
-```
-
-Install the `upcli` command into `~/.local/bin`:
-
-```sh
-make install
-```
-
-## Install a release on macOS Intel
-
-Download the `upcli_<version>_darwin_amd64.tar.gz` asset from the private
-repository's GitHub Release, verify it against the accompanying `.sha256` file,
-then extract and install it:
-
-```sh
-shasum -a 256 -c upcli_<version>_darwin_amd64.tar.gz.sha256
-tar -xzf upcli_<version>_darwin_amd64.tar.gz
-cd upcli_<version>_darwin_amd64
-./install.sh
-upcli --version
-```
-
-The installer places the executable at `~/.local/bin/upcli`. Add that directory
-to `PATH` if needed. The release binary targets macOS Intel (x86_64); it does
-not include or install Codex CLI, Claude Code CLI, or agy.
-
-If `~/.local/bin` is not on your `PATH`, add `export PATH="$HOME/.local/bin:$PATH"` to your shell profile. On this Mac, `upcli` is already linked there.
-
-## Behavior
-
-- Starts `codex update`, `claude update`, and `agy update` at the same time.
-- Renders the live dashboard inline in the current shell and preserves the final report in scrollback.
-- Captures each command's stdout and stderr separately, then streams both into that tool's card so parallel output stays attributable.
-- Shows detected before/after versions and classifies each result as `UPDATED`, `UP_TO_DATE`, `RESTART_REQUIRED`, `FAILED`, or `CHECK`.
-- Uses a non-TUI, tool-prefixed streaming mode when stdout is piped or the terminal does not support interactive rendering.
-- Returns a failing exit code when an updater fails or its result cannot be verified.
-
-The updater commands belong to their respective CLIs; this project orchestrates them and does not install the CLIs through a separate package manager.
-
-## Development
-
-```sh
-go test ./...
-go vet ./...
-```
-
-## Example
+`upcli` brings three separate CLI updates into one clear, concurrent run. Each tool gets its own live status and output, followed by a compact summary of what changed and what needs attention.
 
 ```text
   UPCLI  !  Review required
@@ -72,3 +17,68 @@ go vet ./...
   agy CLI         ✗ FAILED            1.3.5
   ↳ network timeout
 ```
+
+## Why upcli
+
+- **One command, three updates.** Runs `codex update`, `claude update`, and `agy update` concurrently.
+- **Output stays readable.** A live, inline terminal dashboard keeps each tool's output with its status; piped output uses simple tool-prefixed logs.
+- **Know what happened.** Shows detected before/after versions and highlights failures, restart requests, or results that need checking.
+- **Fits existing installs.** Each CLI is updated by its own updater. `upcli` does not replace or bundle those tools.
+
+## Install on macOS Intel
+
+The current release provides a native **macOS Intel (x86_64)** package. Download the archive and checksum from [v0.1.0](https://github.com/DexterL/cli-tools-updater/releases/tag/v0.1.0), then verify and install:
+
+```sh
+VERSION=v0.1.0
+ASSET="upcli_${VERSION}_darwin_amd64.tar.gz"
+BASE="https://github.com/DexterL/cli-tools-updater/releases/download/${VERSION}"
+
+curl -fLO "${BASE}/${ASSET}"
+curl -fLO "${BASE}/${ASSET}.sha256"
+shasum -a 256 -c "${ASSET}.sha256"
+tar -xzf "${ASSET}"
+cd "upcli_${VERSION}_darwin_amd64"
+./install.sh
+```
+
+The installer places `upcli` in `~/.local/bin`. If needed, add that directory to your `PATH`:
+
+```sh
+export PATH="$HOME/.local/bin:$PATH"
+```
+
+Codex CLI, Claude Code CLI, and agy must already be installed and available on your `PATH`. The current release does not include an Apple Silicon package.
+
+## Use
+
+```sh
+upcli --version
+upcli
+```
+
+Running `upcli` starts all three update commands. A non-zero exit status indicates an update failure or a result that could not be verified.
+
+## Build from source
+
+Requires Go 1.24 or later.
+
+```sh
+git clone https://github.com/DexterL/cli-tools-updater.git
+cd cli-tools-updater
+go test ./...
+go vet ./...
+make install
+```
+
+To build the current Intel release archive locally:
+
+```sh
+make release-darwin-amd64 VERSION=v0.1.0
+```
+
+The archive and its SHA-256 file are written to `dist/`.
+
+## License
+
+[MIT](LICENSE)
