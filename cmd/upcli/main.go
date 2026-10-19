@@ -16,6 +16,8 @@ import (
 )
 
 var (
+	version = "dev"
+
 	cyan   = lipgloss.Color("86")
 	green  = lipgloss.Color("42")
 	yellow = lipgloss.Color("214")
@@ -48,10 +50,14 @@ func main() {
 	if len(os.Args) > 1 {
 		if os.Args[1] == "--help" || os.Args[1] == "-h" {
 			fmt.Println("upcli — update Codex CLI, Claude Code CLI, and agy concurrently")
-			fmt.Println("Usage: upcli")
+			fmt.Println("Usage: upcli [--version | --help]")
 			return
 		}
-		fmt.Fprintf(os.Stderr, "unknown argument: %s\nUsage: upcli\n", os.Args[1])
+		if os.Args[1] == "--version" || os.Args[1] == "-v" {
+			fmt.Printf("upcli %s\n", version)
+			return
+		}
+		fmt.Fprintf(os.Stderr, "unknown argument: %s\nUsage: upcli [--version | --help]\n", os.Args[1])
 		os.Exit(2)
 	}
 

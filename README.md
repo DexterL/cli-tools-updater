@@ -23,6 +23,24 @@ Install the `upcli` command into `~/.local/bin`:
 make install
 ```
 
+## Install a release on macOS Intel
+
+Download the `upcli_<version>_darwin_amd64.tar.gz` asset from the private
+repository's GitHub Release, verify it against the accompanying `.sha256` file,
+then extract and install it:
+
+```sh
+shasum -a 256 -c upcli_<version>_darwin_amd64.tar.gz.sha256
+tar -xzf upcli_<version>_darwin_amd64.tar.gz
+cd upcli_<version>_darwin_amd64
+./install.sh
+upcli --version
+```
+
+The installer places the executable at `~/.local/bin/upcli`. Add that directory
+to `PATH` if needed. The release binary targets macOS Intel (x86_64); it does
+not include or install Codex CLI, Claude Code CLI, or agy.
+
 If `~/.local/bin` is not on your `PATH`, add `export PATH="$HOME/.local/bin:$PATH"` to your shell profile. On this Mac, `upcli` is already linked there.
 
 ## Behavior
